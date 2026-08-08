@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Router, F, Bot
 from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
@@ -228,3 +228,75 @@ async def start_answer(message: Message, state: FSMContext):
             parse_mode="HTML",
             reply_markup=uzb_kb
         )
+
+@rt.message(F.text & ~F.text.startswith("/"))
+async def search_anime_by_code(message: Message, state: FSMContext, bot: Bot):
+    user_id = message.from_user.id
+    text = message.text.strip()
+
+    # Agarmatn raqam bo'lmasa (harf yuborilsa)
+    if not text.isdigit():
+        await message.answer(
+            "⚠️ <b>Iltimos, harf yoki boshqa narsa yubormang! Anime qidirish uchun faqat kodni (raqamni) kiriting yoki tugmalardan foydalaning.</b>",
+            parse_mode="HTML"
+        )
+        return
+
+    # Bazadan kod bo'yicha animeni qidirish
+    code = text
+    anime = anime_collection.find_one({"code": code})
+
+    if not anime:
+        await message.answer("❌ <b>Bunday kodli anime topilmadi!</b> Qaytadan tekshirib ko'ring.", parse_mode="HTML")
+        return
+
+    qsimlar = list(qsmi_collection.find({"code": code}))
+    total_qsims = len(qsimlar)
+
+    # Ko'rishlar sonini olish
+    exists = korishlar_collection.find_one({"user_id": user_id, "code": code})
+    if not exists:
+        korishlar_collection.insert_one({
+            "user_id": user_id,
+            "code": code,
+            "video_name": anime['nomi']
+        })
+
+    korish = korishlar_collection.count_documents({"code": code})
+
+    # Inline tugma (yuklab olish uchun)
+    kb = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="Yuklash♻", callback_data=f"nomi_{anime['code']}")]
+        ]
+    )
+
+    caption = (
+        f"📋*Nomi*: {anime['nomi']}\n"
+        f"🎞*Qismi*: 1/{total_qsims}\n"
+        f"🔣*Code*: {anime['code']}\n"
+        f"🔠*Tili*: {anime['tili']}\n"
+        f"🕑*Yili*: {anime['yili']}\n"
+        f"*👁‍Korishlar*: {korish}"
+    )
+
+    # Rasmini yuborish
+    await bot.send_photo(
+        message.chat.id,
+        photo=anime["photo"],
+        caption=caption,
+        parse_mode="Markdown",
+        reply_markup=kb
+    )
+
+    # Kommentariyani tekshirib yuborish
+    kommentar = keyboard_collection.find_one({"code": anime["code"]})
+    if kommentar:
+        await bot.send_message(
+            message.chat.id,
+            f"<b>Komentariya</b>\n{kommentar['komment']}\n<b>yozdi</b> {kommentar['mention']}",
+            parse_mode="HTML"
+        )
+
+    # State update
+    await state.update_data(shucode=anime["code"])

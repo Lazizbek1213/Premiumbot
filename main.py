@@ -27,7 +27,7 @@ from Yuklash.Shorts import rt as short
 from admin.adminqosh import rt as admin_router
 
 
-BOT_TOKEN = "8745345120:AAE9r2vVDsbgsvxtYdrmC4Y2cJRCYlDy7nA"
+BOT_TOKEN = "8085300515:AAFVNBMejfY2T1vqXj8-D6INbfLBO1yxzXE"
 
 bot = Bot(BOT_TOKEN)
 dp = Dispatcher()
@@ -35,7 +35,6 @@ dp = Dispatcher()
 
 routers = [
     umrlik_router,
-    salom_answer,
     buttonlarga,
     habarnastroy,
     vaqt_kanal,
@@ -55,7 +54,8 @@ routers = [
     obuansaq,
     postli,
     momngoga,
-    conetntga
+    conetntga,
+    salom_answer
 ]
 
 async def notify_admins_on_start(bot: Bot):
@@ -108,4 +108,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
