@@ -313,7 +313,7 @@ async def anime_buyurtma_handler(message: Message):
         "🎭 *Anime buyurtma*\n\n"
         "📩 O‘zingiz xohlagan animeni buyurtma berish uchun admin bilan bog‘laning\n"
         "🚀 *Tezkor javob va sifatli xizmat*\n"
-        "👤 Admin: @Lazizbek_2k"
+        "👤 Admin: @khaytbyv"
     )
 
     await message.answer(
@@ -321,7 +321,7 @@ async def anime_buyurtma_handler(message: Message):
         "🎭 <b>Anime buyurtma</b>\n\n"
         "📩 O‘zingiz xohlagan animeni buyurtma berish uchun admin bilan bog‘laning\n\n"
         "<blockquote>🚀 Tezkor javob va sifatli xizmat</blockquote>\n\n"
-        "👤 Admin: @Lazizbek_2k",
+        "👤 Admin: @khaytbyv",
         parse_mode="HTML",
     )
 

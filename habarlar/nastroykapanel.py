@@ -307,7 +307,7 @@ ortga = InlineKeyboardMarkup(
 async def reklama_panel(call: CallbackQuery):
 
     await call.message.edit_text(
-        "📢 Reklama boyicha boglanish @Lazizbek_2k",
+        "📢 Reklama boyicha boglanish @khaytbyv",
         reply_markup=ortga
     )
 
