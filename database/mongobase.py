@@ -5,7 +5,7 @@ from Inlinebutton import adminpaneltug
 rt = Router()
 
 
-client = MongoClient("mongodb+srv://dokena9253_db_user:ECcqNdijLyrgkcEV@cluster0.p0ocptv.mongodb.net/")
+client = MongoClient("mongodb+srv://boladikubu:Lazizbek_12@cluster0.p0ocptv.mongodb.net/")
 kanal = client["Kanal"]
 adminbase = client['adminbotga']
 admin_calleks = adminbase['adminlar']
