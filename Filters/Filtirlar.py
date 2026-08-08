@@ -104,7 +104,7 @@ class IsAdmin(BaseFilter):
             return True
 
         # Boshqa adminlar bazadan tekshiriladi
-        if admin_calleks.find_one({'idsi': user_id}):
+        if admin_calleks.find_one({'user_id': user_id}):
             return True
 
         # Agar admin emas bo‘lsa
