@@ -1,7 +1,11 @@
-from aiogram import Bot, Dispatcher
+import os
 import asyncio
+from aiohttp import web
+from aiogram import Bot, Dispatcher
+
 from database.mongobase import admin_calleks
 from calbacklar.buttonlarga import reminder_worker
+
 # Routers
 from habarlar.obunavasaqlashhabar import rt as obuansaq
 from calbacklar.postga import rt as postli
@@ -26,12 +30,10 @@ from Yuklash.Yuklash_bu import rt as anime_yuk
 from Yuklash.Shorts import rt as short
 from admin.adminqosh import rt as admin_router
 
-
-BOT_TOKEN = "8085300515:AAFVNBMejfY2T1vqXj8-D6INbfLBO1yxzXE"
+BOT_TOKEN = "8790692320:AAH3TwEYP38SCEbkFE0duoz8VG4ReTqcbbs"
 
 bot = Bot(BOT_TOKEN)
 dp = Dispatcher()
-
 
 routers = [
     umrlik_router,
@@ -58,10 +60,14 @@ routers = [
     salom_answer
 ]
 
+
+# Render uchun soxta veb-server (Port scan xatoligini oldini oladi)
+async def handle(request):
+    return web.Response(text="Bot is running live!")
+
+
 async def notify_admins_on_start(bot: Bot):
-
     admins = list(admin_calleks.find())
-
     bot_info = await bot.get_me()
 
     text = (
@@ -78,7 +84,6 @@ async def notify_admins_on_start(bot: Bot):
         try:
             if photos.total_count > 0:
                 file_id = photos.photos[0][-1].file_id
-
                 await bot.send_photo(
                     chat_id=admin["user_id"],
                     photo=file_id,
@@ -91,22 +96,33 @@ async def notify_admins_on_start(bot: Bot):
                     text=text,
                     parse_mode="HTML"
                 )
-        except:
+        except Exception:
             pass
 
 
 async def main():
+    # 1. Web serverni Render ajratgan PORT orqali ishga tushirish
+    app = web.Application()
+    app.router.add_get("/", handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
 
+    port = int(os.environ.get("PORT", 10000))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+
+    # 2. Routerlarni ulash
     for router in routers:
         dp.include_router(router)
+
+    # 3. Fon vazifalarini ishga tushirish
     asyncio.create_task(monitor_all(bot))
     asyncio.create_task(reminder_worker(bot))
     await notify_admins_on_start(bot)
 
+    # 4. Bot pollingni boshlash
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
